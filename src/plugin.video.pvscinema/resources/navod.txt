@@ -1,0 +1,67 @@
+PvS Cinema – jak začít
+======================
+
+Každý si zakládá vlastní účty a zadává vlastní údaje. Doplněk nic z toho neposílá jinam.
+Potřebuješ dvě věci:
+  1) účet na Webshare.cz s předplatným VIP (z něj se filmy přehrávají),
+  2) bezplatný klíč z TMDB (z něj je katalog: názvy, popisy, plakáty, hodnocení).
+Nejpohodlnější je zakládat účty na počítači nebo telefonu.
+
+
+1) ÚČET NA WEBSHARE.CZ
+----------------------
+  a) Otevři webshare.cz a vpravo nahoře klikni na „Registrace“.
+  b) Vyplň uživatelské jméno, e-mail a heslo a potvrď registraci odkazem z e-mailu.
+  c) Přihlas se a kup VIP (odkaz „VIP“ nebo „Koupit VIP“). Ceny a délky předplatného jsou na webu.
+     Bez VIP přehrávání nefunguje – Webshare pak vydává jen pomalé „free“ odkazy,
+     které Kodi neumí přehrát (doplněk na to upozorní červenou položkou v menu).
+  d) VIP se může připsat s několikaminutovým zpožděním.
+
+
+2) KLÍČ TMDB (themoviedb.org) – zdarma
+-------------------------------------
+  a) Otevři themoviedb.org a klikni na „Přidat se k TMDB“ (Join TMDB).
+     Vyplň jméno, heslo a e-mail a potvrď registraci odkazem z e-mailu.
+  b) Přihlas se → klikni na ikonu profilu vpravo nahoře → Nastavení → v levém menu „API“.
+  c) Klikni na „Vytvořit“ / „Create“ a zvol typ „Developer“, přijmi podmínky.
+  d) Formulář vyplň takto (nikdo ho nekontroluje):
+       Název aplikace:   PvS Cinema
+       URL aplikace:     https://kodi.tv   (vlastní web mít nemusíš)
+       Typ použití:      Personal (Osobní), případně Desktop Application
+       Souhrn aplikace:  Osobní doplněk pro Kodi na domácí televizi, nekomerční použití.
+       Kontaktní údaje:  své jméno, telefon a adresu
+     a klikni na Odeslat (Submit). Pokud formulář překrývá lišta cookies, nejdřív ji zavři.
+  e) Na stránce API se objeví „API Key“ (krátký, 32 znaků) a „API Read Access Token“ (dlouhý).
+     Do doplňku stačí jeden z nich – doporučuji kratší „API Key“.
+
+
+3) ZADÁNÍ ÚDAJŮ DO DOPLŇKU
+--------------------------
+  a) V Kodi otevři PvS Cinema → Nastavení → záložka „Účet“.
+  b) Vyplň:
+       Webshare: uživatelské jméno nebo e-mail
+       Webshare: heslo
+       TMDB: API klíč
+  c) Dlouhý klíč nemusíš ťukat ovladačem: v doplňku otevři Hledat → „Hledat z telefonu“,
+     na telefonu otevři zobrazenou adresu, přepni na „Do klávesnice“ a klíč tam vlož.
+     Text se zapíše do klávesnice, která je zrovna otevřená v Kodi.
+  d) Kontrola: nahoře v hlavním menu se ukáže „Webshare VIP: zbývá … dní“.
+     Když něco nejde, spusť „Diagnostika“ v hlavním menu.
+
+
+4) INSTALACE DOPLŇKU NA DALŠÍ ZAŘÍZENÍ
+--------------------------------------
+  - Potřeba je Kodi 19 nebo novější (Android TV, Android box, Fire TV, Windows, Linux,
+    LibreELEC, CoreELEC). Na Kodi 18 a starším nepoběží.
+  - V Kodi: Nastavení (ozubené kolo) → Systém → Doplňky → zapni „Neznámé zdroje“.
+  - Pak Doplňky → „Instalovat ze souboru ZIP“ → vyber soubor plugin.video.pvscinema-….zip
+    (z USB disku, ze složky Stažené nebo ze sdílené složky v síti).
+  - Potom znovu krok 3 – údaje se zadávají na každém zařízení zvlášť.
+  - Jeden účet Webshare jde použít na více zařízeních, ale přehrávej vždy jen na jednom najednou.
+
+
+5) PRÁVNÍ POZNÁMKA
+------------------
+Doplněk jen vyhledává a přehrává soubory, které jsou na Webshare.cz. Stahování a sdílení obsahu
+chráněného autorským právem, který tam někdo nahrál bez svolení, je v ČR nelegální.
+Přihlašovací údaje ani klíče nikomu neposílej.

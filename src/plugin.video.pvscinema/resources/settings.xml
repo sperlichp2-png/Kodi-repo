@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<settings>
+  <category label="Účet">
+    <setting id="username" type="text" label="Webshare: uživatelské jméno nebo e-mail" default=""/>
+    <setting id="password" type="text" option="hidden" label="Webshare: heslo" default=""/>
+    <setting id="tmdb_key" type="text" label="TMDB: API klíč nebo Read Access Token (themoviedb.org)" default=""/>
+    <setting id="vip_notify" type="bool" label="Po startu Kodi ukázat, kolik dní zbývá do konce VIP" default="true"/>
+    <setting id="token" type="text" visible="false" default=""/>
+    <setting id="device_uuid" type="text" visible="false" default=""/>
+  </category>
+  <category label="Vyhledávání">
+    <setting id="hide_unavailable" type="bool" label="V seznamech skrýt tituly, které nejsou na Webshare" default="true"/>
+    <setting id="stream_flags" type="bool" label="V seznamu filmů ukázat údaje o streamu (délka, kodek, rozlišení)" default="true"/>
+    <setting id="sort" type="enum" label="Řazení výsledků „Přímo na Webshare“" values="Relevance|Nejnovější|Hodnocení|Největší|Nejmenší" default="0"/>
+    <setting id="limit" type="slider" label="Souborů na stránku („Přímo na Webshare“)" range="10,10,100" option="int" default="50"/>
+    <setting id="series_pages" type="slider" label="Kolik stránek (po 100) načíst u seriálu" range="1,1,10" option="int" default="3"/>
+    <setting id="min_size_mb" type="number" label="Minimální velikost souboru (MB)" default="50"/>
+  </category>
+  <category label="Zobrazení a ovládání">
+    <setting id="view_mode" type="enum" label="Zobrazení seznamů filmů a seriálů (skin Estuary)" values="Neměnit|Seznam s náhledem plakátu|Plakáty|Info stěna|Široký seznam|Stěna" default="1"/>
+    <setting id="phone_remote" type="bool" label="Hledat z telefonu (webová stránka v domácí síti, po změně restart Kodi)" default="true"/>
+    <setting id="phone_port" type="number" label="Port stránky pro telefon" default="8765"/>
+    <setting id="search_key" type="enum" label="Klávesa pro rychlé hledání" values="F3|Ctrl+F|S" default="0"/>
+    <setting type="action" label="Nainstalovat klávesové zkratky (hledání, F4 = hlas)" action="RunPlugin(plugin://plugin.video.pvscinema/?action=install_keymap)"/>
+    <setting type="action" label="Odebrat klávesové zkratky" action="RunPlugin(plugin://plugin.video.pvscinema/?action=remove_keymap)"/>
+  </category>
+  <category label="Titulky">
+    <setting id="subs_mode" type="enum" label="Titulky z Webshare" values="Vypnuto|Automaticky (nejlepší shoda)|Zeptat se (výběr ze seznamu)" default="1"/>
+    <setting id="subs_lang" type="text" label="Upřednostnit jazyk (slova v názvu souboru)" default="cz,cze,cs,czech,sk"/>
+  </category>
+</settings>

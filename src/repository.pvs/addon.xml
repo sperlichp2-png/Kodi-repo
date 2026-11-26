@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="repository.pvs" name="PvS Repository" version="1.0.1" provider-name="PvS">
+  <extension point="xbmc.addon.repository" name="PvS Repository">
+    <dir>
+      <info compressed="false">https://raw.githubusercontent.com/sperlichp2-png/Kodi-repo/main/zips/addons.xml</info>
+      <checksum>https://raw.githubusercontent.com/sperlichp2-png/Kodi-repo/main/zips/addons.xml.md5</checksum>
+      <datadir zip="true">https://raw.githubusercontent.com/sperlichp2-png/Kodi-repo/main/zips/</datadir>
+    </dir>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="cs_CZ">Repozitář s doplňkem PvS Cinema</summary>
+    <platform>all</platform>
+  </extension>
+</addon>

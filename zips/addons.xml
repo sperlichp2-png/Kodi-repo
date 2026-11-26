@@ -1,19 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="repository.pvs" name="PvS Repository" version="1.0.1" provider-name="PvS">
-  <extension point="xbmc.addon.repository" name="PvS Repository">
-    <dir>
-      <info compressed="false">https://raw.githubusercontent.com/sperlichp2-png/Kodi-repo/main/zips/addons.xml</info>
-      <checksum>https://raw.githubusercontent.com/sperlichp2-png/Kodi-repo/main/zips/addons.xml.md5</checksum>
-      <datadir zip="true">https://raw.githubusercontent.com/sperlichp2-png/Kodi-repo/main/zips/</datadir>
-    </dir>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary lang="cs_CZ">Repozitář s doplňkem PvS Cinema</summary>
-    <platform>all</platform>
-  </extension>
-</addon>
-
 <addon id="plugin.video.pvscinema" name="PvS Cinema" version="3.4.5" provider-name="PvS">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
@@ -34,15 +20,16 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.pvstest" name="PvS Test" version="1.0.0" provider-name="PvS">
-  <requires>
-    <import addon="xbmc.python" version="3.0.0"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource" library="main.py">
-    <provides>video</provides>
+<addon id="repository.pvs" name="PvS Repository" version="1.0.1" provider-name="PvS">
+  <extension point="xbmc.addon.repository" name="PvS Repository">
+    <dir>
+      <info compressed="false">https://raw.githubusercontent.com/sperlichp2-png/Kodi-repo/main/zips/addons.xml</info>
+      <checksum>https://raw.githubusercontent.com/sperlichp2-png/Kodi-repo/main/zips/addons.xml.md5</checksum>
+      <datadir zip="true">https://raw.githubusercontent.com/sperlichp2-png/Kodi-repo/main/zips/</datadir>
+    </dir>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary lang="cs_CZ">Testovací doplněk</summary>
+    <summary lang="cs_CZ">Repozitář s doplňkem PvS Cinema</summary>
     <platform>all</platform>
   </extension>
 </addon>
