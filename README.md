@@ -22,4 +22,8 @@ Kodi repozitář a zdrojový kód doplňku **PvS Cinema** (`plugin.video.pvscine
 - Instalace jen přes repozitář (Install from repository), ne přímo ze ZIPu doplňku.
 - Sekce 18+: v Hledat zadat `#4711`. Odemčení je dočasné (do návratu do hlavního menu nebo restartu Kodi),
   v hlavním menu se neukazuje, hledá v kategorii `adult` na Webshare.
-- Otevřené: přihlášení k Webshare na boxu hlásí `LOGIN_FATAL_1` (Invalid credentials), stejný účet jinde funguje.
+- Sekce **Vánoce <rok>** v hlavním menu (automaticky 1. 11. – 15. 1., v nastavení lze Vždy/Nikdy). Seznamy z TMDB podle
+  klíčových slov „christmas“, „christmas eve“, „santa claus“ (ID se zjistí za běhu). Ikona a pozadí v `resources/media/`.
+- Po otevření doplňku se kontroluje `zips/addons.xml` na GitHubu (nejvýš jednou za 3 h). Je-li verze vyšší, ukáže se
+  nahoře v menu žlutá položka a jednou za spuštění Kodi dotaz „Aktualizovat?“ → obnoví repozitáře a otevře
+  seznam aktualizací. Po aktualizaci se jednou ukáže „Co je nového“ (slovník `NEWS` v `main.py` – při vydání doplnit).

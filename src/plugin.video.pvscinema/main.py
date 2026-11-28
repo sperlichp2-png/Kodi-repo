@@ -507,6 +507,128 @@ def warn_no_vip():
                                   nolabel='Zrušit', yeslabel='Zkusit přesto')
 
 
+# ---------- Vánoce ----------
+MEDIA = os.path.join(xbmcvfs.translatePath(ADDON.getAddonInfo('path')), 'resources', 'media')
+XMAS_ICON = os.path.join(MEDIA, 'vanoce_icon.png')
+XMAS_FANART = os.path.join(MEDIA, 'vanoce_fanart.jpg')
+XMAS_KEYWORD_FALLBACK = '207317'        # TMDB klíčové slovo „christmas“ (ověří se za běhu)
+
+
+def xmas_year():
+    t = time.localtime()
+    return t.tm_year - 1 if t.tm_mon < 11 else t.tm_year
+
+
+def xmas_season():
+    """Sekce Vánoce se ukazuje od 1. 11. do 15. 1. (nebo vždy, když je tak nastaveno)."""
+    if setting('xmas_show') == '1':
+        return True
+    if setting('xmas_show') == '2':
+        return False
+    t = time.localtime()
+    return t.tm_mon in (11, 12) or (t.tm_mon == 1 and t.tm_mday <= 15)
+
+
+def xmas_art():
+    return {'icon': XMAS_ICON, 'thumb': XMAS_ICON, 'poster': XMAS_ICON, 'fanart': XMAS_FANART}
+
+
+def xmas_keyword():
+    """ID klíčových slov TMDB pro Vánoce (christmas, christmas eve, santa claus…), cache na 30 dní."""
+    c = load_json('xmas_keyword.json', {})
+    if c.get('ids') and time.time() - c.get('ts', 0) < 30 * 86400:
+        return c['ids']
+    ids = []
+    try:
+        for q in ('christmas', 'christmas eve', 'santa claus'):
+            d = tm().get('search/keyword', query=q)
+            ids += [str(r['id']) for r in d.get('results', []) if (r.get('name') or '').lower() == q]
+    except T.TmdbError as e:
+        log('Klíčová slova Vánoce: %s' % e)
+    ids = '|'.join(uniq(ids)) or XMAS_KEYWORD_FALLBACK
+    if ids != XMAS_KEYWORD_FALLBACK:
+        save_json('xmas_keyword.json', {'ts': time.time(), 'ids': ids})
+    return ids
+
+
+# ---------- aktualizace doplňku ----------
+REPO_ADDONS_XML = 'https://raw.githubusercontent.com/sperlichp2-png/Kodi-repo/main/zips/addons.xml'
+UPDATE_TTL = 3 * 3600
+NEWS = {
+    '3.5.0': 'Nová sekce [B]Vánoce %d[/B] v hlavním menu: vánoční filmy, novinky, pohádky, komedie, '
+             'romantické, české a slovenské vánoční filmy, české pohádky a vánoční seriály.\n'
+             'Doplněk teď po otevření sám upozorní, když je k dispozici nová verze.',
+}
+
+
+def vtuple(v):
+    return tuple(int(x) for x in re.findall(r'\d+', v or '0'))
+
+
+def latest_version(force=False):
+    """Nejnovější verze doplňku v repozitáři na GitHubu (kontrola nejvýš jednou za 3 hodiny)."""
+    c = load_json('update_check.json', {})
+    if not force and c.get('latest') is not None and time.time() - c.get('ts', 0) < UPDATE_TTL:
+        return c['latest']
+    latest = ''
+    try:
+        req = urllib.request.Request(REPO_ADDONS_XML + '?t=%d' % int(time.time() // 600),
+                                     headers={'User-Agent': 'Kodi PvS Cinema'})
+        with urllib.request.urlopen(req, timeout=4) as r:
+            xml = r.read().decode('utf-8', 'replace')
+        m = re.search(r'<addon[^>]*\bid="%s"[^>]*\bversion="([^"]+)"' % re.escape(ADDON.getAddonInfo('id')), xml)
+        latest = m.group(1) if m else ''
+    except Exception as e:
+        log('Kontrola aktualizace: %s' % e)
+        if c.get('latest') is not None:
+            return c['latest']
+    save_json('update_check.json', {'ts': time.time(), 'latest': latest})
+    return latest
+
+
+def update_available():
+    latest = latest_version()
+    return latest if latest and vtuple(latest) > vtuple(ADDON.getAddonInfo('version')) else ''
+
+
+def do_update():
+    """Obnoví repozitáře a otevře v Kodi seznam dostupných aktualizací."""
+    xbmc.executebuiltin('UpdateAddonRepos')
+    notify('Hledám aktualizace v PvS Repository…', error=False)
+    xbmc.Monitor().waitForAbort(4)
+    xbmc.executebuiltin('ActivateWindow(AddonBrowser,addons://outdated/,return)')
+
+
+def offer_update(latest):
+    """Jednou za spuštění Kodi se zeptá, jestli aktualizovat."""
+    win = xbmcgui.Window(10000)
+    if win.getProperty('pvs_update_asked') == latest:
+        return
+    win.setProperty('pvs_update_asked', latest)
+    if xbmcgui.Dialog().yesno('PvS Cinema – nová verze',
+                              'Je dostupná nová verze [B]%s[/B] (teď máš %s).\n'
+                              'Aktualizovat teď? V seznamu aktualizací vyber PvS Cinema → Aktualizovat.'
+                              % (latest, ADDON.getAddonInfo('version')),
+                              nolabel='Později', yeslabel='Aktualizovat'):
+        do_update()
+
+
+def show_news():
+    """Po aktualizaci jednou ukáže, co je nového."""
+    ver = ADDON.getAddonInfo('version')
+    seen = load_json('news_seen.json', {}).get('version')
+    if seen == ver:
+        return
+    save_json('news_seen.json', {'version': ver})
+    if not seen:       # první instalace – nic neukazuj
+        return
+    text = NEWS.get(ver)
+    if text:
+        if '%d' in text:
+            text = text % xmas_year()
+        xbmcgui.Dialog().ok('PvS Cinema %s – co je nového' % ver, text)
+
+
 # ---------- TMDB ----------
 _TM = None
 
@@ -773,12 +895,32 @@ def list_spec(kind, name, genre='', year='', rmin='', rmax=''):
     if name == 'tips':
         return 'discover/' + kind, {'sort_by': 'popularity.desc', 'vote_average.gte': 7,
                                     'vote_count.gte': 500 if m else 200}
+    if name.startswith('xmas'):
+        p = {'sort_by': 'popularity.desc', 'with_keywords': xmas_keyword()}
+        extra = {
+            'xmas': {'vote_count.gte': 10},
+            'xmas_new': {('primary_release_date.gte' if m else 'first_air_date.gte'): '%d-01-01' % (xmas_year() - 1),
+                         ('primary_release_date.lte' if m else 'first_air_date.lte'): today()},
+            'xmas_kids': {'with_genres': '16|10751' if m else '16|10751|10762'},
+            'xmas_comedy': {'with_genres': '35', 'vote_count.gte': 10},
+            'xmas_romance': {'with_genres': '10749', 'vote_count.gte': 10},
+            'xmas_top': {'sort_by': 'vote_average.desc', 'vote_count.gte': 300 if m else 50},
+            'xmas_cz': {'with_origin_country': 'CZ|SK'},
+        }[name]
+        p.update(extra)
+        return 'discover/' + kind, p
+    if name == 'cz_fairy':
+        return 'discover/' + kind, {'sort_by': 'popularity.desc', 'with_origin_country': 'CZ|SK',
+                                    'with_genres': '14,10751' if m else '10751', 'vote_count.gte': 3}
     raise ValueError(name)
 
 
 LIST_TITLES = {'popular': 'Populární', 'trending': 'Trendy', 'trending_day': 'Právě sledované',
                'top': 'Nejlépe hodnocené', 'news': 'Novinky', 'genre': 'Žánr', 'year': 'Rok', 'rating': 'Hodnocení',
-               'kids': 'Kids', 'tips': 'Tipy na dnes'}
+               'kids': 'Kids', 'tips': 'Tipy na dnes', 'xmas': 'Vánoční filmy', 'xmas_new': 'Vánoční novinky',
+               'xmas_kids': 'Vánoční pro děti', 'xmas_comedy': 'Vánoční komedie', 'xmas_romance': 'Vánoční romantika',
+               'xmas_top': 'Nejlépe hodnocené vánoční', 'xmas_cz': 'České a slovenské vánoční',
+               'cz_fairy': 'České a slovenské pohádky'}
 
 
 def catalog(kind, name, page=1, dub=False, **spec):
@@ -802,13 +944,17 @@ def catalog(kind, name, page=1, dub=False, **spec):
             collected += items
             if not (hide or dub) or len(collected) >= 40:
                 break
+        if name.startswith('xmas') or name == 'cz_fairy':
+            for it in collected:
+                it['fanart'] = XMAS_FANART
         shown = render_items(collected, hide_unavailable=hide, dub_only=dub)
     except T.TmdbError as e:
         notify(str(e))
     finally:
         tm().save()
     if collected and page <= total and page <= 500:
-        add_dir('[B]Další >>[/B]', 'DefaultFolder.png', action='list', kind=kind, name=name, page=page,
+        more_art = xmas_art() if (name.startswith('xmas') or name == 'cz_fairy') else None
+        add_dir('[B]Další >>[/B]', 'DefaultFolder.png', art=more_art, action='list', kind=kind, name=name, page=page,
                 dub='1' if dub else '', **spec)
     if not shown:
         notify('Na Webshare jsem z tohoto seznamu nic nenašel' if collected else 'Seznam je prázdný', error=False)
@@ -1743,6 +1889,10 @@ def root():
             color = 'FFE53935' if days <= 3 else ('FFFB8C00' if days <= 7 else 'FF43A047')
             add_dir('[COLOR %s][B]Webshare %s[/B][/COLOR]' % (color, text), 'DefaultUser.png',
                     action='account', folder=False)
+    latest = update_available()
+    if latest:
+        add_dir('[COLOR FFFDD835][B]Je dostupná nová verze %s – klikni pro aktualizaci[/B][/COLOR]' % latest,
+                'DefaultAddonsUpdates.png', action='update', folder=False)
     if not setting('username') or not setting('tmdb_key').strip():
         add_dir('[COLOR FFFDD835][B]Jak začít: založení účtů Webshare a TMDB[/B][/COLOR]', 'DefaultIconInfo.png',
                 action='help', folder=False)
@@ -1753,6 +1903,8 @@ def root():
     add_dir('Filmy', 'DefaultMovies.png', action='menu', kind='movie')
     add_dir('Seriály', 'DefaultTVShows.png', action='menu', kind='tv')
     add_dir('Pro děti', 'DefaultAddonGame.png', action='kids')
+    if xmas_season():
+        add_dir('[COLOR FFE53935][B]Vánoce %d[/B][/COLOR]' % xmas_year(), art=xmas_art(), action='xmas')
     add_dir('Naposledy sledované', 'DefaultRecentlyAddedMovies.png', action='watched')
     add_dir('Historie hledání', 'DefaultFolder.png', action='history')
     add_dir('Přímo na Webshare', 'DefaultNetwork.png', action='ws_search')
@@ -1760,6 +1912,25 @@ def root():
     add_dir('Diagnostika (když nejde přehrávání)', 'DefaultAddonHelper.png', action='diagnostics', folder=False)
     add_dir('Nastavení', 'DefaultAddonProgram.png', action='settings', folder=False)
     add_dir('Návod: jak začít (účty Webshare a TMDB)', 'DefaultIconInfo.png', action='help', folder=False)
+    end_dir(HANDLE)
+    show_news()
+    if latest:
+        offer_update(latest)
+
+
+def xmas_menu():
+    y = xmas_year()
+    xbmcplugin.setPluginCategory(HANDLE, 'Vánoce %d' % y)
+    art = xmas_art()
+    add_dir('[B]Vánoční filmy – nejoblíbenější[/B]', art=art, action='list', kind='movie', name='xmas')
+    add_dir('Vánoční novinky %d–%d' % (y - 1, y), art=art, action='list', kind='movie', name='xmas_new')
+    add_dir('Pohádky a animované pro děti', art=art, action='list', kind='movie', name='xmas_kids')
+    add_dir('Vánoční komedie', art=art, action='list', kind='movie', name='xmas_comedy')
+    add_dir('Romantické vánoční filmy', art=art, action='list', kind='movie', name='xmas_romance')
+    add_dir('Nejlépe hodnocené vánoční filmy', art=art, action='list', kind='movie', name='xmas_top')
+    add_dir('České a slovenské vánoční filmy', art=art, action='list', kind='movie', name='xmas_cz')
+    add_dir('České a slovenské pohádky', art=art, action='list', kind='movie', name='cz_fairy')
+    add_dir('Vánoční seriály a speciály', art=art, action='list', kind='tv', name='xmas')
     end_dir(HANDLE)
 
 
@@ -1860,6 +2031,10 @@ def router():
             kind_menu('tv' if p['kind'] in ('tv', 'series') else 'movie')
         elif a == 'kids':
             kids_menu()
+        elif a == 'xmas':
+            xmas_menu()
+        elif a == 'update':
+            do_update()
         elif a == 'list':
             catalog(p['kind'], p['name'], p.get('page'), p.get('dub') == '1', genre=p.get('genre', ''),
                     year=p.get('year', ''), rmin=p.get('rmin', ''), rmax=p.get('rmax', ''))
@@ -1929,7 +2104,7 @@ def router():
         notify(str(e))
         if a in ('play', 'pick', 'pick_ep'):
             resolve_fail()
-        elif a not in ('account', 'settings', 'clear_history', 'adult_lock', 'adult_clear', 'install_keymap', 'remove_keymap', 'diagnostics',
+        elif a not in ('account', 'settings', 'update', 'clear_history', 'adult_lock', 'adult_clear', 'install_keymap', 'remove_keymap', 'diagnostics',
                        'tmdb_help'):
             end_dir(HANDLE, succeeded=False)
 

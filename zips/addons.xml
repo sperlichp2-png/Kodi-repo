@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.pvscinema" name="PvS Cinema" version="3.4.5" provider-name="PvS">
+<addon id="plugin.video.pvscinema" name="PvS Cinema" version="3.5.0" provider-name="PvS">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
   </requires>
@@ -13,6 +13,7 @@
     <description lang="cs_CZ">Katalog filmů a seriálů z TMDB (novinky, populární, trendy, žánry, hodnocení), přehrávání z Webshare.cz s výběrem streamu (kvalita, kodek, audio stopy, bitrate), automatické titulky a hledání z telefonu. Ovládání po vzoru Stream Cinema.</description>
     <platform>all</platform>
     <license>MIT</license>
+    <news>3.5.0: Sekce Vánoce (vánoční filmy, pohádky, české a slovenské vánoční filmy, seriály). Upozornění na novou verzi po otevření doplňku.</news>
     <assets>
       <icon>icon_logo.png</icon>
       <fanart>fanart_logo.jpg</fanart>

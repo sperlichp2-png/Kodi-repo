@@ -17,6 +17,7 @@
     <setting id="min_size_mb" type="number" label="Minimální velikost souboru (MB)" default="50"/>
   </category>
   <category label="Zobrazení a ovládání">
+    <setting id="xmas_show" type="enum" label="Sekce Vánoce v hlavním menu" values="Automaticky (1. 11. – 15. 1.)|Vždy|Nikdy" default="0"/>
     <setting id="view_mode" type="enum" label="Zobrazení seznamů filmů a seriálů (skin Estuary)" values="Neměnit|Seznam s náhledem plakátu|Plakáty|Info stěna|Široký seznam|Stěna" default="1"/>
     <setting id="phone_remote" type="bool" label="Hledat z telefonu (webová stránka v domácí síti, po změně restart Kodi)" default="true"/>
     <setting id="phone_port" type="number" label="Port stránky pro telefon" default="8765"/>
